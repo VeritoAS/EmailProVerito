@@ -30,6 +30,7 @@ const selectedDomain = computed(() => {
   dataRevision.value
   return domains.value.find((item) => item.id === selectedDomainId.value)
 })
+const isSelectedDomainAtCapacity = computed(() => selectedDomain.value && selectedDomain.value.activeMailboxes >= selectedDomain.value.maxActiveMailboxes)
 const domainHeaders = [
   { title: 'Dominio', key: 'name' },
   { title: 'Expiración', key: 'expirationDate' },
@@ -82,6 +83,7 @@ function openMailboxes(domain) {
 }
 
 function openMailboxForm() {
+  if (isSelectedDomainAtCapacity.value) return
   mailboxDialog.value = false
   selectedMailbox.value = null
   mailboxFormDialog.value = true
@@ -92,7 +94,14 @@ function openMailboxEdit(mailbox) { selectedMailbox.value = distributorMailboxes
 function toggleDomainStatus(domain) { selectedDomainId.value = domain.id; showDomainStatusConfirm.value = true }
 function confirmDomainStatus() { selectedDomain.value.status = selectedDomain.value.status === 'Activo' ? 'Inactivo' : 'Activo'; dataRevision.value += 1 }
 function toggleMailboxStatus(mailbox) { selectedMailbox.value = distributorMailboxes.find((item) => item.id === mailbox.id); showMailboxStatusConfirm.value = true }
-function confirmMailboxStatus() { const mailbox = selectedMailbox.value; mailbox.status = mailbox.status === 'Activa' ? 'Inactiva' : 'Activa'; selectedDomain.value.activeMailboxes += mailbox.status === 'Activa' ? 1 : -1; dataRevision.value += 1 }
+function confirmMailboxStatus() {
+  const mailbox = selectedMailbox.value
+  const isActivating = mailbox.status === 'Inactiva'
+  if (isActivating && isSelectedDomainAtCapacity.value) return
+  mailbox.status = isActivating ? 'Activa' : 'Inactiva'
+  selectedDomain.value.activeMailboxes += isActivating ? 1 : -1
+  dataRevision.value += 1
+}
 
 function mailboxSaved() {
   dataRevision.value += 1
@@ -110,12 +119,17 @@ function mailboxSaved() {
 
     <div class="d-flex justify-space-between align-center mb-4"><div class="d-flex align-center"><v-icon icon="mdi-earth" size="28" class="mr-3 text-medium-emphasis" /><h2 class="text-h5 font-weight-bold">Dominios</h2></div><v-btn color="#43A047" prepend-icon="mdi-plus" :to="`/distribuidor/clientes/${client.id}/dominios/nuevo`">Agregar dominio</v-btn></div>
     <v-card border rounded="xl" elevation="0" class="mb-4"><v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center py-4"><v-select v-model="domainStatusInput" :items="['ACTIVOS', 'INACTIVOS', 'TODOS']" label="Mostrar" variant="underlined" density="compact" hide-details :disabled="!editingDomainFilters" class="w-100 mb-3 mb-sm-0" /><v-text-field v-model="domainSearch" placeholder="Buscar" append-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details class="w-100" /></v-card-text><v-sheet :color="editingDomainFilters ? 'primary' : 'grey-darken-1'" class="py-2 px-4 text-center cursor-pointer" v-ripple @click="toggleDomainFilters"><span class="text-caption font-weight-bold text-white text-uppercase d-flex align-center justify-center">{{ editingDomainFilters ? 'Aplicar filtros' : 'Cambiar filtros' }}<v-icon icon="mdi-filter-variant" size="small" class="ml-1" /></span></v-sheet></v-card>
-    <v-card border rounded="xl" elevation="0"><v-data-table :headers="domainHeaders" :items="filteredDomains" items-per-page-text="Dominios por página" page-text="{0}-{1} de {2}"><template #item.capacity="{ item }">{{ item.activeMailboxes }} de {{ item.maxActiveMailboxes }}</template><template #item.status="{ item }"><v-btn :color="item.status === 'Activo' ? '#43A047' : '#E53935'" size="small" variant="tonal" @click="toggleDomainStatus(item)">{{ item.status }}</v-btn></template><template #item.actions="{ item }"><v-btn icon="mdi-card-account-details-outline" color="#2962FF" variant="text" size="small" aria-label="Consultar cuentas de correo" @click="openMailboxes(item)" /><v-btn icon="mdi-pencil-outline" color="#FFB300" variant="text" size="small" aria-label="Editar dominio" @click="openDomainEdit(item)" /></template></v-data-table></v-card>
+    <v-card border rounded="xl" elevation="0"><v-data-table :headers="domainHeaders" :items="filteredDomains" items-per-page-text="Dominios por página" page-text="{0}-{1} de {2}"><template #no-data><div class="py-8 text-center text-medium-emphasis"><v-icon icon="mdi-earth" size="34" class="mb-2" /><p class="mb-0">No hay dominios que coincidan con los filtros.</p></div></template><template #item.capacity="{ item }">{{ item.activeMailboxes }} de {{ item.maxActiveMailboxes }}</template><template #item.status="{ item }"><v-btn :color="item.status === 'Activo' ? '#43A047' : '#E53935'" size="small" variant="tonal" @click="toggleDomainStatus(item)">{{ item.status }}</v-btn></template><template #item.actions="{ item }"><v-btn icon="mdi-card-account-details-outline" color="#2962FF" variant="text" size="small" aria-label="Consultar cuentas de correo" @click="openMailboxes(item)" /><v-btn icon="mdi-pencil-outline" color="#FFB300" variant="text" size="small" aria-label="Editar dominio" @click="openDomainEdit(item)" /></template></v-data-table></v-card>
 
     <v-dialog v-model="mailboxDialog" max-width="1080" scrollable>
       <v-card v-if="selectedDomain" rounded="xl">
         <v-card-title class="d-flex justify-space-between align-start pa-6"><div><p class="text-overline text-secondary font-weight-bold mb-1">DOMINIO</p><h2 class="text-h5 font-weight-bold">{{ selectedDomain.name }}</h2><p class="text-body-2 text-medium-emphasis mt-1">{{ selectedDomain.activeMailboxes }} / {{ selectedDomain.maxActiveMailboxes }} cuentas activas</p></div><v-btn icon="mdi-close" variant="text" aria-label="Cerrar" @click="mailboxDialog = false" /></v-card-title>
-        <v-card-text class="px-6 pb-6"><div class="d-flex justify-space-between align-center mb-4"><h3 class="text-h6 font-weight-bold">Cuentas de correo</h3><v-btn color="#43A047" prepend-icon="mdi-plus" @click="openMailboxForm">Agregar cuenta</v-btn></div><v-card border rounded="lg" elevation="0" class="mb-4"><v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center py-4"><v-select v-model="mailboxStatusInput" :items="['ACTIVAS', 'INACTIVAS', 'TODAS']" label="Mostrar" variant="underlined" density="compact" hide-details :disabled="!editingMailboxFilters" class="w-100 mb-3 mb-sm-0" /><v-text-field v-model="mailboxSearch" placeholder="Buscar" append-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details class="w-100" /></v-card-text><v-sheet :color="editingMailboxFilters ? 'primary' : 'grey-darken-1'" class="py-2 px-4 text-center cursor-pointer" v-ripple @click="toggleMailboxFilters"><span class="text-caption font-weight-bold text-white text-uppercase d-flex align-center justify-center">{{ editingMailboxFilters ? 'Aplicar filtros' : 'Cambiar filtros' }}<v-icon icon="mdi-filter-variant" size="small" class="ml-1" /></span></v-sheet></v-card><v-card border rounded="lg" elevation="0"><v-data-table :headers="mailboxHeaders" :items="filteredMailboxes" items-per-page-text="Cuentas por página" page-text="{0}-{1} de {2}"><template #item.status="{ item }"><v-btn :color="item.status === 'Activa' ? '#43A047' : '#E53935'" size="small" variant="tonal" @click="toggleMailboxStatus(item)">{{ item.status }}</v-btn></template><template #item.actions="{ item }"><v-btn icon="mdi-pencil-outline" color="#FFB300" variant="text" size="small" aria-label="Editar cuenta" @click="openMailboxEdit(item)" /></template></v-data-table></v-card></v-card-text>
+        <v-card-text class="px-6 pb-6">
+          <div class="d-flex justify-space-between align-center mb-4"><h3 class="text-h6 font-weight-bold">Cuentas de correo</h3><v-btn color="#43A047" prepend-icon="mdi-plus" :disabled="isSelectedDomainAtCapacity" @click="openMailboxForm">Agregar cuenta</v-btn></div>
+          <v-alert v-if="isSelectedDomainAtCapacity" type="warning" variant="tonal" class="mb-4" text="Se alcanzó el límite de cuentas activas de este dominio. Puedes editar el límite o desactivar una cuenta." />
+          <v-card border rounded="lg" elevation="0" class="mb-4"><v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center py-4"><v-select v-model="mailboxStatusInput" :items="['ACTIVAS', 'INACTIVAS', 'TODAS']" label="Mostrar" variant="underlined" density="compact" hide-details :disabled="!editingMailboxFilters" class="w-100 mb-3 mb-sm-0" /><v-text-field v-model="mailboxSearch" placeholder="Buscar" append-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details class="w-100" /></v-card-text><v-sheet :color="editingMailboxFilters ? 'primary' : 'grey-darken-1'" class="py-2 px-4 text-center cursor-pointer" v-ripple @click="toggleMailboxFilters"><span class="text-caption font-weight-bold text-white text-uppercase d-flex align-center justify-center">{{ editingMailboxFilters ? 'Aplicar filtros' : 'Cambiar filtros' }}<v-icon icon="mdi-filter-variant" size="small" class="ml-1" /></span></v-sheet></v-card>
+          <v-card border rounded="lg" elevation="0"><v-data-table :headers="mailboxHeaders" :items="filteredMailboxes" items-per-page-text="Cuentas por página" page-text="{0}-{1} de {2}"><template #no-data><div class="py-8 text-center text-medium-emphasis"><v-icon icon="mdi-email-outline" size="34" class="mb-2" /><p class="mb-0">No hay cuentas que coincidan con los filtros.</p></div></template><template #item.status="{ item }"><v-btn :color="item.status === 'Activa' ? '#43A047' : '#E53935'" size="small" variant="tonal" :disabled="item.status === 'Inactiva' && isSelectedDomainAtCapacity" @click="toggleMailboxStatus(item)">{{ item.status }}</v-btn></template><template #item.actions="{ item }"><v-btn icon="mdi-pencil-outline" color="#FFB300" variant="text" size="small" aria-label="Editar cuenta" @click="openMailboxEdit(item)" /></template></v-data-table></v-card>
+        </v-card-text>
       </v-card>
     </v-dialog>
     <MailboxFormDialog v-model="mailboxFormDialog" :domain="selectedDomain" :mailbox="selectedMailbox" @saved="mailboxSaved" />
