@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { adminDistributors } from '../../data/adminDistributors'
 
 const router = useRouter()
 
@@ -30,21 +31,16 @@ const headers = [
   { title: '#', key: 'index', sortable: false },
   { title: 'Nombre Comercial', key: 'name' },
   { title: 'Usuario (Acceso)', key: 'user' },
+  { title: 'Costo por cuenta', key: 'monthlyCost' },
   { title: 'CLABE', key: 'clabe' },
-  { title: 'Perfil Fiscal', key: 'profile' },
+  { title: 'Perfil Fiscal', key: 'fiscalProfile' },
   { title: 'Acciones', key: 'actions', sortable: false, align: 'end' },
 ]
 
-const distributors = ref([
-  { id: 1, name: 'Comercializadora del Bajío', user: 'contacto@bajio.com', clabe: '012345678901234567', profile: 'Persona Moral', status: 'ACTIVOS' },
-  { id: 2, name: 'Soluciones Tecnológicas SA de CV', user: 'admin@soluciones.com', clabe: '987654321098765432', profile: 'Persona Moral', status: 'ACTIVOS' },
-  { id: 3, name: 'Juan Pérez Distribuciones', user: 'juan.perez@gmail.com', clabe: '112233445566778899', profile: 'Persona Física', status: 'INACTIVOS' },
-])
-
 // Filtro aplicado a la tabla (solo reacciona al appliedStatus)
 const filteredDistributors = computed(() => {
-  if (appliedStatus.value === 'TODOS') return distributors.value
-  return distributors.value.filter(d => d.status === appliedStatus.value)
+  if (appliedStatus.value === 'TODOS') return adminDistributors.value
+  return adminDistributors.value.filter(d => d.status === appliedStatus.value)
 })
 </script>
 
@@ -118,8 +114,12 @@ const filteredDistributors = computed(() => {
           <span class="font-weight-bold">{{ index + 1 }}</span>
         </template>
 
-        <template v-slot:item.profile="{ item }">
-          <v-chip size="small" color="info" variant="tonal">{{ item.profile }}</v-chip>
+        <template v-slot:item.monthlyCost="{ item }">
+          <span class="font-weight-medium">${{ Number(item.monthlyCost).toFixed(2) }} MXN</span>
+        </template>
+
+        <template v-slot:item.fiscalProfile="{ item }">
+          <v-chip size="small" :color="item.fiscalProfile === 'Pendiente' ? '#FFB300' : '#43A047'" variant="tonal">{{ item.fiscalProfile }}</v-chip>
         </template>
 
         <template v-slot:item.actions="{ item }">

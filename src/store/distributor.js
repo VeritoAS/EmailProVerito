@@ -3,6 +3,7 @@ export const distributorProfile = {
   email: 'contacto@comercialnorte.com',
   fiscalProfileComplete: false,
   clabeRegistered: false,
+  svrMonthlyCost: 12,
 }
 
 export const distributorClients = [
@@ -12,9 +13,15 @@ export const distributorClients = [
 ]
 
 export const distributorDomains = [
-  { id: 1, clientId: 1, name: 'grupohorizonte.com', expirationDate: '21 ago. 2027', maxActiveMailboxes: 10, activeMailboxes: 3, status: 'Activo' },
-  { id: 2, clientId: 1, name: 'horizonte.mx', expirationDate: '21 ago. 2027', maxActiveMailboxes: 5, activeMailboxes: 1, status: 'Activo' },
-  { id: 3, clientId: 2, name: 'solucionescentro.com', expirationDate: '20 ago. 2027', maxActiveMailboxes: 8, activeMailboxes: 2, status: 'Activo' },
+  { id: 1, clientId: 1, name: 'grupohorizonte.com', expirationDate: '21 ago. 2027', maxActiveMailboxes: 10, activeMailboxes: 3, monthlyPrice: 18, paymentEligible: true, status: 'Activo' },
+  { id: 2, clientId: 1, name: 'horizonte.mx', expirationDate: '21 ago. 2027', maxActiveMailboxes: 5, activeMailboxes: 1, monthlyPrice: 17, paymentEligible: true, status: 'Activo' },
+  { id: 3, clientId: 2, name: 'solucionescentro.com', expirationDate: '20 ago. 2027', maxActiveMailboxes: 8, activeMailboxes: 2, monthlyPrice: 19, status: 'Activo' },
+]
+
+export const distributorPayments = [
+  { id: 1, domainId: 1, paidAt: '21 ago. 2026', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 sep. 2026' },
+  { id: 2, domainId: 1, paidAt: '21 jul. 2026', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 ago. 2026' },
+  { id: 3, domainId: 2, paidAt: '21 ago. 2026', period: 'Trimestral', capacity: 5, customerUnitPrice: 17, customerTotal: 255, svrUnitCost: 12, svrTotal: 180, distributorDifference: 75, newExpirationDate: '21 nov. 2026' },
 ]
 
 export const distributorMailboxes = [

@@ -10,8 +10,10 @@ import DistributorClientForm from '../views/distributor_section/clients/Form.vue
 import DistributorClientShow from '../views/distributor_section/clients/Show.vue'
 import DistributorDomainForm from '../views/distributor_section/domains/Form.vue'
 import DistributorMailboxForm from '../views/distributor_section/mailboxes/Form.vue'
+import DistributorClientPaymentsView from '../views/distributor_section/payments/List.vue'
 import ClientDashboardView from '../views/client_section/dashboard/Home.vue'
 import ClientDomainsView from '../views/client_section/domains/List.vue'
+import ClientPaymentsView from '../views/client_section/payments/List.vue'
 import ClientAccountView from '../views/client_section/account/Information.vue'
 import ClientAccountForm from '../views/client_section/account/Form.vue'
 import WebsiteView from '../views/WebsiteView.vue'
@@ -68,6 +70,12 @@ const router = createRouter({
       meta: { role: 'distributor' }
     },
     {
+      path: '/distribuidor/clientes/:id/pagos',
+      name: 'distributor-client-payments',
+      component: DistributorClientPaymentsView,
+      meta: { role: 'distributor' }
+    },
+    {
       path: '/distribuidor/clientes/:id/dominios/:domainId/cuentas/nuevo',
       name: 'distributor-mailbox-create',
       component: DistributorMailboxForm,
@@ -95,6 +103,12 @@ const router = createRouter({
       path: '/cliente/dominios',
       name: 'client-domains',
       component: ClientDomainsView,
+      meta: { role: 'client' }
+    },
+    {
+      path: '/cliente/pagos',
+      name: 'client-payments',
+      component: ClientPaymentsView,
       meta: { role: 'client' }
     },
     {

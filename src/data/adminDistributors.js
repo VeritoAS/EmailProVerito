@@ -1,0 +1,40 @@
+import { ref } from 'vue'
+
+export const adminDistributors = ref([
+  {
+    id: 1,
+    name: 'Comercializadora del Bajío',
+    responsible: 'Mariana Soto',
+    user: 'contacto@bajio.com',
+    monthlyCost: 12,
+    clabe: '012345678901234567',
+    fiscalProfile: 'Persona Moral',
+    fiscal: { legalName: 'Comercializadora del Bajío SA de CV', rfc: 'CBA120815AB1', postalCode: '37000', fiscalRegime: 'Régimen General de Ley Personas Morales', cfdiUse: 'G03 - Gastos en general' },
+    status: 'ACTIVOS',
+    registeredAt: '15/08/2026',
+  },
+  {
+    id: 2,
+    name: 'Soluciones Tecnológicas SA de CV',
+    responsible: 'Carlos Ruiz',
+    user: 'admin@soluciones.com',
+    monthlyCost: 15,
+    clabe: '987654321098765432',
+    fiscalProfile: 'Persona Moral',
+    fiscal: { legalName: 'Soluciones Tecnológicas SA de CV', rfc: 'STC180420CD2', postalCode: '64000', fiscalRegime: 'Régimen Simplificado de Confianza', cfdiUse: 'G03 - Gastos en general' },
+    status: 'ACTIVOS',
+    registeredAt: '18/08/2026',
+  },
+  {
+    id: 3,
+    name: 'Juan Pérez Distribuciones',
+    responsible: 'Juan Pérez',
+    user: 'juan.perez@gmail.com',
+    monthlyCost: 10,
+    clabe: '',
+    fiscalProfile: 'Pendiente',
+    fiscal: null,
+    status: 'INACTIVOS',
+    registeredAt: '20/08/2026',
+  },
+])

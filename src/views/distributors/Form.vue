@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ConfirmDialog from '../../components/ConfirmDialog.vue'
+import { adminDistributors } from '../../data/adminDistributors'
 
 const router = useRouter()
 const showConfirm = ref(false)
@@ -12,10 +13,23 @@ const form = ref({
   first_name: '',
   last_name: '',
   second_last_name: '',
-  email: ''
+  email: '',
+  monthlyCost: null,
 })
 
 function save() {
+  adminDistributors.value.push({
+    id: Date.now(),
+    name: form.value.commercial_name,
+    responsible: [form.value.first_name, form.value.last_name, form.value.second_last_name].filter(Boolean).join(' '),
+    user: form.value.email,
+    monthlyCost: Number(form.value.monthlyCost),
+    clabe: '',
+    fiscalProfile: 'Pendiente',
+    fiscal: null,
+    status: 'ACTIVOS',
+    registeredAt: new Date().toLocaleDateString('es-MX'),
+  })
   router.push('/distribuidores')
 }
 </script>
@@ -39,6 +53,16 @@ function save() {
             <v-col cols="12">
               <div class="text-subtitle-2 text-medium-emphasis mb-1">Nombre Comercial</div>
               <v-text-field v-model="form.commercial_name" placeholder="Ej. Comercializadora del Bajío" variant="outlined" density="comfortable" maxlength="150" />
+            </v-col>
+          </v-row>
+
+          <v-divider class="my-6" />
+
+          <h2 class="text-h6 font-weight-bold mb-4">Costo asignado por SVR</h2>
+          <v-row>
+            <v-col cols="12" md="6">
+              <div class="text-subtitle-2 text-medium-emphasis mb-1">Costo mensual por cuenta</div>
+              <v-text-field v-model="form.monthlyCost" type="number" min="0.01" step="0.01" prefix="$" suffix="MXN" placeholder="0.00" variant="outlined" density="comfortable" :rules="[(value) => Number(value) > 0 || 'Ingresa un importe mayor que cero.']" />
             </v-col>
           </v-row>
 
@@ -70,7 +94,7 @@ function save() {
           <v-divider class="my-6" />
 
           <div class="d-flex justify-end">
-            <v-btn color="#43A047" type="submit" elevation="0">Registrar distribuidor</v-btn>
+            <v-btn color="#43A047" type="submit" elevation="0" :disabled="Number(form.monthlyCost) <= 0">Registrar distribuidor</v-btn>
           </div>
         </v-form>
       </v-card-text>
