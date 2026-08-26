@@ -1,11 +1,14 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import ConfirmDialog from '../../components/ConfirmDialog.vue'
 import { adminDistributors } from '../../data/adminDistributors'
 
 const router = useRouter()
+const route = useRoute()
 const showConfirm = ref(false)
+const distributor = computed(() => adminDistributors.value.find((item) => item.id === Number(route.params.id)))
+const isEditing = computed(() => Boolean(route.params.id))
 
 // Estructura actualizada a las reglas de negocio
 const form = ref({
@@ -17,11 +20,34 @@ const form = ref({
   monthlyCost: null,
 })
 
+if (distributor.value) {
+  const [firstName = '', ...lastNames] = distributor.value.responsible.split(' ')
+  form.value = {
+    commercial_name: distributor.value.name,
+    first_name: firstName,
+    last_name: lastNames.shift() || '',
+    second_last_name: lastNames.join(' '),
+    email: distributor.value.user,
+    monthlyCost: distributor.value.monthlyCost,
+  }
+}
+
 function save() {
+  const responsible = [form.value.first_name, form.value.last_name, form.value.second_last_name].filter(Boolean).join(' ')
+  if (isEditing.value && distributor.value) {
+    Object.assign(distributor.value, {
+      name: form.value.commercial_name,
+      responsible,
+      user: form.value.email,
+      monthlyCost: Number(form.value.monthlyCost),
+    })
+    router.push(`/distribuidores/${distributor.value.id}`)
+    return
+  }
   adminDistributors.value.push({
     id: Date.now(),
     name: form.value.commercial_name,
-    responsible: [form.value.first_name, form.value.last_name, form.value.second_last_name].filter(Boolean).join(' '),
+    responsible,
     user: form.value.email,
     monthlyCost: Number(form.value.monthlyCost),
     clabe: '',
@@ -40,7 +66,7 @@ function save() {
       <v-btn icon="mdi-arrow-left" variant="text" class="mr-4" @click="router.push('/distribuidores')" />
       <div>
         <p class="text-overline text-primary mb-0">DISTRIBUIDORES</p>
-        <h1 class="text-h5 font-weight-bold mb-0">Nuevo distribuidor</h1>
+        <h1 class="text-h5 font-weight-bold mb-0">{{ isEditing ? 'Editar distribuidor' : 'Nuevo distribuidor' }}</h1>
       </div>
     </div>
 
@@ -94,11 +120,11 @@ function save() {
           <v-divider class="my-6" />
 
           <div class="d-flex justify-end">
-            <v-btn color="#43A047" type="submit" elevation="0" :disabled="Number(form.monthlyCost) <= 0">Registrar distribuidor</v-btn>
+            <v-btn color="#43A047" type="submit" elevation="0" :disabled="Number(form.monthlyCost) <= 0">{{ isEditing ? 'Guardar cambios' : 'Registrar distribuidor' }}</v-btn>
           </div>
         </v-form>
       </v-card-text>
     </v-card>
-    <ConfirmDialog v-model="showConfirm" message="Se registrará el distribuidor y su cuenta de acceso." @confirm="save" />
+    <ConfirmDialog v-model="showConfirm" :message="isEditing ? 'Se actualizarán los datos del distribuidor.' : 'Se registrará el distribuidor y su cuenta de acceso.'" @confirm="save" />
   </section>
 </template>
