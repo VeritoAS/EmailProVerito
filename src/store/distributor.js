@@ -19,9 +19,9 @@ export const distributorDomains = [
 ]
 
 export const distributorPayments = [
-  { id: 1, domainId: 1, paidAt: '21 ago. 2026', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 sep. 2026' },
-  { id: 2, domainId: 1, paidAt: '21 jul. 2026', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 ago. 2026' },
-  { id: 3, domainId: 2, paidAt: '21 ago. 2026', period: 'Trimestral', capacity: 5, customerUnitPrice: 17, customerTotal: 255, svrUnitCost: 12, svrTotal: 180, distributorDifference: 75, newExpirationDate: '21 nov. 2026' },
+  { id: 1, domainId: 1, paidAt: '21 ago. 2026', payment_term_id: 'Mensual', mailbox_quantity: 10, gross_amount: 180, previous_expires_at: '21 ago. 2026', new_expires_at: '21 sep. 2026', invoiceStatus: 'generated', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 sep. 2026' },
+  { id: 2, domainId: 1, paidAt: '21 jul. 2026', payment_term_id: 'Mensual', mailbox_quantity: 10, gross_amount: 180, previous_expires_at: '21 jul. 2026', new_expires_at: '21 ago. 2026', invoiceStatus: 'pending', period: 'Mensual', capacity: 10, customerUnitPrice: 18, customerTotal: 180, svrUnitCost: 12, svrTotal: 120, distributorDifference: 60, newExpirationDate: '21 ago. 2026' },
+  { id: 3, domainId: 2, paidAt: '21 ago. 2026', payment_term_id: 'Trimestral', mailbox_quantity: 5, gross_amount: 255, previous_expires_at: '21 ago. 2026', new_expires_at: '21 nov. 2026', invoiceStatus: 'generated', period: 'Trimestral', capacity: 5, customerUnitPrice: 17, customerTotal: 255, svrUnitCost: 12, svrTotal: 180, distributorDifference: 75, newExpirationDate: '21 nov. 2026' },
 ]
 
 export const distributorMailboxes = [

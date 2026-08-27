@@ -14,8 +14,12 @@ import DistributorClientPaymentsView from '../views/distributor_section/payments
 import ClientDashboardView from '../views/client_section/dashboard/Home.vue'
 import ClientDomainsView from '../views/client_section/domains/List.vue'
 import ClientPaymentsView from '../views/client_section/payments/List.vue'
+import ClientPaymentHistoryView from '../views/client_section/payments/History.vue'
 import ClientAccountView from '../views/client_section/account/Information.vue'
 import ClientAccountForm from '../views/client_section/account/Form.vue'
+import AdminUsersView from '../views/users/List.vue'
+import AdminUserForm from '../views/users/Form.vue'
+import AdminUserShow from '../views/users/Show.vue'
 import WebsiteView from '../views/WebsiteView.vue'
 // Nota: Hemos eliminado "import DistributorsView..." de aquí
 
@@ -112,6 +116,12 @@ const router = createRouter({
       meta: { role: 'client' }
     },
     {
+      path: '/cliente/pagos/:domainId',
+      name: 'client-payment-history',
+      component: ClientPaymentHistoryView,
+      meta: { role: 'client' }
+    },
+    {
       path: '/cliente/mi-cuenta',
       name: 'client-account',
       component: ClientAccountView,
@@ -149,7 +159,22 @@ const router = createRouter({
     {
       path: '/usuarios',
       name: 'usuarios',
-      component: PlaceholderView
+      component: AdminUsersView
+    },
+    {
+      path: '/usuarios/nuevo',
+      name: 'usuarios-create',
+      component: AdminUserForm
+    },
+    {
+      path: '/usuarios/:id',
+      name: 'usuarios-show',
+      component: AdminUserShow
+    },
+    {
+      path: '/usuarios/:id/editar',
+      name: 'usuarios-edit',
+      component: AdminUserForm
     },
     {
       path: '/configuracion',

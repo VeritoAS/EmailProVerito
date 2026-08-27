@@ -50,12 +50,19 @@ function confirmPayment() {
   const domain = selectedDomain.value
   const payment = pendingPayment.value
   const now = new Date()
+  const previousExpiration = domain.expirationDate
   const nextDate = parseExpirationDate(domain.expirationDate)
   nextDate.setMonth(nextDate.getMonth() + payment.months)
   domain.expirationDate = nextDate.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
   distributorPayments.unshift({
     id: Date.now(), domainId: domain.id,
     paidAt: now.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }),
+    payment_term_id: payment.period,
+    mailbox_quantity: payment.capacity,
+    gross_amount: payment.customerTotal,
+    previous_expires_at: previousExpiration,
+    new_expires_at: domain.expirationDate,
+    invoiceStatus: 'pending',
     period: payment.period, capacity: payment.capacity,
     customerUnitPrice: payment.customerUnitPrice, customerTotal: payment.customerTotal,
     svrUnitCost: distributorProfile.svrMonthlyCost,
