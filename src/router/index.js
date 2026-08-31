@@ -15,6 +15,7 @@ import ClientDashboardView from '../views/client_section/dashboard/Home.vue'
 import ClientDomainsView from '../views/client_section/domains/List.vue'
 import ClientPaymentsView from '../views/client_section/payments/List.vue'
 import ClientPaymentHistoryView from '../views/client_section/payments/History.vue'
+import ClientPaymentCheckoutView from '../views/client_section/payments/Checkout.vue'
 import ClientAccountView from '../views/client_section/account/Information.vue'
 import ClientAccountForm from '../views/client_section/account/Form.vue'
 import AdminUsersView from '../views/users/List.vue'
@@ -119,6 +120,12 @@ const router = createRouter({
       path: '/cliente/pagos/:domainId',
       name: 'client-payment-history',
       component: ClientPaymentHistoryView,
+      meta: { role: 'client' }
+    },
+    {
+      path: '/cliente/pagos/:domainId/pagar',
+      name: 'client-payment-checkout',
+      component: ClientPaymentCheckoutView,
       meta: { role: 'client' }
     },
     {

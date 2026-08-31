@@ -7,7 +7,6 @@ import AppTopbar from './components/layout/AppTopbar.vue'
 import DistributorSidebar from './components/distributor/DistributorSidebar.vue'
 import ClientSidebar from './components/client/ClientSidebar.vue'
 
-const drawerOpen = ref(true)
 const theme = useTheme()
 const isDark = ref(false)
 const route = useRoute()
@@ -29,9 +28,9 @@ function toggleTheme() {
 <template>
   <v-app>
     <template v-if="!isPublicRoute">
-      <DistributorSidebar v-if="isDistributorRoute" v-model="drawerOpen" />
-      <ClientSidebar v-else-if="isClientRoute" v-model="drawerOpen" />
-      <AppSidebar v-else v-model="drawerOpen" />
+      <DistributorSidebar v-if="isDistributorRoute" />
+      <ClientSidebar v-else-if="isClientRoute" />
+      <AppSidebar v-else />
       <AppTopbar :is-dark="isDark" :user="currentUser" @toggle-theme="toggleTheme" />
     </template>
     

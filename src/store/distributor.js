@@ -38,4 +38,5 @@ export const clientProfile = {
   responsible: 'Mariana Soto',
   email: 'mariana@horizonte.com',
   fiscalProfileComplete: false,
+  fiscalData: null,
 }

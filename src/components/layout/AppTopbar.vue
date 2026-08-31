@@ -6,7 +6,7 @@ defineEmits(['toggle-theme'])
 </script>
 
 <template>
-  <v-app-bar elevation="0" height="68" class="border-b px-2">
+  <v-app-bar order="-1" elevation="0" height="68" class="border-b px-2">
     <v-spacer />
     
     <v-btn icon variant="text" class="mx-1" aria-label="Notificaciones">
