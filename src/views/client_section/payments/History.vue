@@ -12,8 +12,6 @@ const successMessage = ref('')
 const dataRevision = ref(0)
 const searchInput = ref('')
 const termInput = ref('TODOS')
-const appliedTerm = ref('TODOS')
-const isEditingFilters = ref(false)
 
 const domain = computed(() => distributorDomains.find((item) => item.id === Number(route.params.domainId) && item.clientId === clientProfile.clientId))
 const headers = [
@@ -31,7 +29,7 @@ const payments = computed(() => {
 const filteredPayments = computed(() => {
   const query = searchInput.value.trim().toLowerCase()
   return payments.value.filter((item) => {
-    const matchesTerm = appliedTerm.value === 'TODOS' || item.payment_term_id?.toUpperCase() === appliedTerm.value
+    const matchesTerm = termInput.value === 'TODOS' || item.payment_term_id?.toUpperCase() === termInput.value
     const searchable = `${item.payment_term_id} ${item.previous_expires_at} ${item.new_expires_at}`.toLowerCase()
     return matchesTerm && (!query || searchable.includes(query))
   })
@@ -39,10 +37,6 @@ const filteredPayments = computed(() => {
 const canPay = computed(() => domain.value?.status === 'Activo' && domain.value?.paymentEligible === true)
 const currency = (value) => `$${Number(value).toFixed(2)} MXN`
 
-function toggleFilters() {
-  if (isEditingFilters.value) appliedTerm.value = termInput.value
-  isEditingFilters.value = !isEditingFilters.value
-}
 function requestInvoice(payment) {
   selectedInvoice.value = payment
   showInvoiceConfirm.value = true
@@ -66,7 +60,7 @@ function download(type) {
       <v-btn color="#43A047" prepend-icon="mdi-credit-card-outline" :disabled="!canPay" :to="`/cliente/pagos/${domain.id}/pagar`">Pagar</v-btn>
     </div>
 
-    <v-card border rounded="xl" elevation="0" class="mb-4"><v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center py-4"><v-select v-model="termInput" :items="['TODOS', 'MENSUAL', 'TRIMESTRAL', 'SEMESTRAL', 'ANUAL']" label="Mostrar" variant="underlined" density="compact" hide-details :disabled="!isEditingFilters" class="w-100 mb-3 mb-sm-0" /><v-text-field v-model="searchInput" placeholder="Buscar" append-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details class="w-100" /></v-card-text><v-sheet :color="isEditingFilters ? 'primary' : 'grey-darken-1'" class="py-2 px-4 text-center cursor-pointer" v-ripple @click="toggleFilters"><span class="text-caption font-weight-bold text-white text-uppercase d-flex align-center justify-center">{{ isEditingFilters ? 'Aplicar filtros' : 'Cambiar filtros' }}<v-icon icon="mdi-filter-variant" size="small" class="ml-1" /></span></v-sheet></v-card>
+    <v-card border rounded="xl" elevation="0" class="mb-4"><v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center ga-4 py-4"><v-select v-model="termInput" :items="['TODOS', 'MENSUAL', 'TRIMESTRAL', 'SEMESTRAL', 'ANUAL']" label="Mostrar" variant="underlined" density="compact" hide-details class="w-100 mb-3 mb-sm-0" /><v-text-field v-model="searchInput" placeholder="Buscar" append-inner-icon="mdi-magnify" variant="outlined" density="compact" hide-details class="w-100" /></v-card-text></v-card>
     <v-card border rounded="xl" elevation="0"><v-data-table :headers="headers" :items="filteredPayments" items-per-page-text="Pagos por página" page-text="{0}-{1} de {2}"><template #no-data><div class="py-8 text-center text-medium-emphasis"><v-icon icon="mdi-invoice-text-outline" size="34" class="mb-2" /><p class="mb-0">Aún no hay pagos registrados para este dominio.</p></div></template><template #item.gross_amount="{ item }">{{ currency(item.gross_amount) }}</template><template #item.actions="{ item }"><template v-if="item.invoiceStatus === 'generated'"><v-tooltip text="Descargar PDF" location="top"><template #activator="{ props }"><v-btn v-bind="props" icon="mdi-file-pdf-box" color="#E53935" variant="text" size="small" aria-label="Descargar PDF" @click="download('PDF')" /></template></v-tooltip><v-tooltip text="Descargar XML" location="top"><template #activator="{ props }"><v-btn v-bind="props" icon="mdi-file-xml-box" color="#26A69A" variant="text" size="small" aria-label="Descargar XML" @click="download('XML')" /></template></v-tooltip></template><v-tooltip v-else text="Generar factura" location="top"><template #activator="{ props }"><v-btn v-bind="props" icon="mdi-file-document-plus-outline" color="#FFB300" variant="text" size="small" aria-label="Generar factura" @click="requestInvoice(item)" /></template></v-tooltip></template></v-data-table></v-card>
     <ConfirmDialog v-model="showInvoiceConfirm" title="¿Quieres generar la factura?" message="Se habilitarán los archivos PDF y XML de este pago." @confirm="generateInvoice" />
     <v-snackbar v-model="showSuccess" color="#43A047" location="top right" timeout="4000">{{ successMessage }}</v-snackbar>

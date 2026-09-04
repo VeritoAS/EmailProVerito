@@ -8,24 +8,8 @@ const router = useRouter()
 // Buscador independiente y en tiempo real
 const searchInput = ref('')
 
-// Estado interactivo de la barra de filtros
-const isEditingFilters = ref(false)
-
-// Valores del selector
+// Selector aplicado en tiempo real
 const statusInput = ref('ACTIVOS')
-const appliedStatus = ref('ACTIVOS')
-
-// Función que controla el flujo del botón (Gris/Azul y Bloqueado/Desbloqueado)
-function toggleFilters() {
-  if (isEditingFilters.value) {
-    // Si estaba azul (editando), aplicamos y regresamos a gris
-    appliedStatus.value = statusInput.value
-    isEditingFilters.value = false
-  } else {
-    // Si estaba gris, lo volvemos azul y habilitamos el selector
-    isEditingFilters.value = true
-  }
-}
 
 const headers = [
   { title: '#', key: 'index', sortable: false },
@@ -37,10 +21,9 @@ const headers = [
   { title: 'Acciones', key: 'actions', sortable: false, align: 'end' },
 ]
 
-// Filtro aplicado a la tabla (solo reacciona al appliedStatus)
 const filteredDistributors = computed(() => {
-  if (appliedStatus.value === 'TODOS') return adminDistributors.value
-  return adminDistributors.value.filter(d => d.status === appliedStatus.value)
+  if (statusInput.value === 'TODOS') return adminDistributors.value
+  return adminDistributors.value.filter(d => d.status === statusInput.value)
 })
 </script>
 
@@ -59,8 +42,8 @@ const filteredDistributors = computed(() => {
 
     <!-- BLOQUE 1: Contenedor de Filtros -->
     <v-card elevation="2" rounded="lg" class="mb-4">
-      <v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center py-4">
-        <!-- Selector (Bloqueado por defecto, reacciona al botón) -->
+      <v-card-text class="d-flex flex-column flex-sm-row justify-space-between align-center ga-4 py-4">
+        <!-- Selector aplicado automáticamente -->
         <v-select
           v-model="statusInput"
           :items="['ACTIVOS', 'INACTIVOS', 'TODOS']"
@@ -68,7 +51,6 @@ const filteredDistributors = computed(() => {
           variant="underlined"
           density="compact"
           hide-details
-          :disabled="!isEditingFilters"
           style="max-width: 200px;"
           class="w-100 mb-3 mb-sm-0"
         />
@@ -85,19 +67,6 @@ const filteredDistributors = computed(() => {
           class="w-100"
         />
       </v-card-text>
-
-      <!-- Botón interactivo -->
-      <v-sheet 
-        :color="isEditingFilters ? 'primary' : 'grey-darken-1'" 
-        class="py-2 px-4 text-center cursor-pointer transition-swing" 
-        v-ripple 
-        @click="toggleFilters"
-      >
-        <span class="text-caption font-weight-bold text-white text-uppercase d-flex align-center justify-center">
-          {{ isEditingFilters ? 'Aplicar filtros' : 'Cambiar filtros' }}
-          <v-icon icon="mdi-filter-variant" size="small" class="ml-1" />
-        </span>
-      </v-sheet>
     </v-card>
 
     <!-- BLOQUE 2: Tabla de datos -->
