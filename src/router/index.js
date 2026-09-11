@@ -27,6 +27,15 @@ import WebsiteView from '../views/WebsiteView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    ...['client', 'distributor'].flatMap(role => {
+      const prefix = role === 'client' ? '/cliente/dominios/:domainId/gestor' : '/distribuidor/clientes/:id/dominios/:domainId/gestor'
+      return [
+        { path: prefix, name: `${role}-website-manager`, component: () => import('../views/website_manager/Index.vue'), meta: { role } },
+        { path: `${prefix}/identidad`, name: `${role}-website-identity`, component: () => import('../views/website_manager/Form.vue'), meta: { role } },
+        { path: `${prefix}/secciones/:sectionId`, name: `${role}-website-section`, component: () => import('../views/website_manager/Form.vue'), meta: { role } },
+        { path: `${prefix}/vista-previa`, name: `${role}-website-preview`, component: () => import('../views/website_manager/Preview.vue'), meta: { role } },
+      ]
+    }),
     {
       path: '/',
       name: 'inicio',
